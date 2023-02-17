@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { loginUser } from "../services/Login";
+import { logoutUser } from "../services/Logout";
 
 
 export const AuthContext = createContext()
@@ -15,9 +16,10 @@ export const AuthContextProvider = ({children}) => {
         })
     }
 
-    const logout = async (inputs) => {
-        //axios logout
-        setCurrentUser(null);
+    const logout = async () => {
+        logoutUser().then(() => {
+          setCurrentUser(null);  
+        })    
     }
 
     useEffect(() => {
