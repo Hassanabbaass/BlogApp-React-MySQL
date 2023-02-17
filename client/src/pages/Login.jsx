@@ -33,15 +33,14 @@ const Login = () => {
     //   setErr(err.response.data)
     // })
 
-    try{
-
-      //login function from context 
-      await login(inputs);
+    //login function from context 
+    await login(inputs).then((result) => {
       navigate('/');
 
-    } catch (err) {
+    }).catch((err)=>{
       setErr(err.response.data)
-    }
+
+    })
     
   }
 

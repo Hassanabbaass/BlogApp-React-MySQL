@@ -11,15 +11,16 @@ export const AuthContextProvider = ({children}) => {
     const login = async (inputs) => {
 
         //from services
-        loginUser(inputs).then((result) => {
+        await loginUser(inputs).then((result) => {
             setCurrentUser(result.data)
         })
     }
 
-    const logout = async () => {
-        logoutUser().then(() => {
+    const logout = async (inputs) => {
+        await logoutUser().then(() => {
           setCurrentUser(null);  
-        })    
+        })
+        
     }
 
     useEffect(() => {
