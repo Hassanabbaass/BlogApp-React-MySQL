@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
+import { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { loginUser } from '../services/Login'
+import { AuthContext } from '../context/authContext'
+
+// this is used in context not here
+// import { loginUser } from '../services/Login'
 
 const Login = () => {
 
@@ -13,17 +17,32 @@ const Login = () => {
 
   const navigate = useNavigate()
 
+  //login should come from the context api
+  const {login} = useContext(AuthContext)
+
   const handleChange = e => {
     setInputs(prev=>({...prev, [e.target.name]: e.target.value}))
   }
 
   const handleSubmit = async e => {
     e.preventDefault();
-    await loginUser(inputs).then((result) => {
-      navigate('/')
-    }).catch((err)=> {
+    // No Need to use this way when we have context api
+    // await loginUser(inputs).then((result) => {
+    //   navigate('/')
+    // }).catch((err)=> {
+    //   setErr(err.response.data)
+    // })
+
+    try{
+
+      //login function from context 
+      await login(inputs);
+      navigate('/');
+
+    } catch (err) {
       setErr(err.response.data)
-    })
+    }
+    
   }
 
   return (
