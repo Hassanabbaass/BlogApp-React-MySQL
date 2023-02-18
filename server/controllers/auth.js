@@ -43,6 +43,7 @@ const login = (req,res) => {
 
         if(!isPasswordCorrect) return res.status(400).json("Wrong username or password!")
 
+                                // this id is used in delete post as userInfo.id
         const token = jwt.sign({ id: data[0].id}, "jwtkey")
         const {password, ...other} = data[0];
 

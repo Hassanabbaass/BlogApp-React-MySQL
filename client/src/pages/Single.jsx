@@ -1,40 +1,70 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Delete from '../assets/delete.png'
 import Edit from '../assets/edit.png'
 import Menu from '../components/Menu';
+import { getPost } from '../services/getPost';
+import moment from 'moment';
+import { AuthContext } from '../context/authContext';
+import userLogo from '../assets/userlogo.png'
+import { deletePost } from '../services/deletePost';
 
 const Single = () => {
+
+    const [post, setPost] = useState({});
+
+    const location = useLocation()
+
+    const navigate = useNavigate()
+
+    //splitting the url so that we can get the post id
+    const postId = location.pathname.split("/")[2]
+
+    const {currentUser} = useContext(AuthContext);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            getPost(postId).then((result) => {
+                setPost(result.data);
+            }).catch((err) => {
+                console.log(err)
+            })
+        };
+        fetchData();
+    }, [postId]);
+
+    const handleDelete = async () => {
+        deletePost(postId).then((result) => {
+            navigate("/")
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
   return (
     <div className='single'>
         <div className='content'>
-            <img src='https://images.pexels.com/photos/7008010/pexels-photo-7008010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' alt=''/>
+            <img src={post?.img} alt=''/>
             <div className="user">
-                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPBuOFja-lS91v0c8miM5VdLwS-at8r4EAqnCJZXxClTrjIFYKSz8FccKhk1C9I5huta4&usqp=CAU' alt=''/>
+                <img src={post?.userImg ? post.userImg : userLogo} alt=''/>
                 <div className="info">
-                    <span>Chris</span>
-                    <p>Posted 2 days ago</p>
+                    <span>{post.username}</span>
+                    <p>Posted {moment(post.date).fromNow()}</p>
                 </div>
-                <div className="edit">
-                    <Link to='/write?edit=2'>
-                        <img src={Edit} alt=''/>
-                    </Link>
-                    <img src={Delete} alt=''/>
-                </div>
+
+                {/* before using post.username make sure to join the posts table and users table */}
+                {
+                currentUser?.username === post.username && 
+                    <div className="edit">
+                        <Link to='/write?edit=2'>
+                            <img src={Edit} alt=''/>
+                        </Link>
+                        <img src={Delete} alt='' onClick={handleDelete}/>
+                    </div>
+                }
             </div>
-            <h1>This Is A Title</h1>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem debitis modi odit at nam rerum, dicta, dignissimos magnam eius alias, culpa sed. Fuga blanditiis necessitatibus quis. Quia ad repellendus quidem?
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae odio porro laborum quae illo nesciunt sint dolorem tempora odit, incidunt a similique voluptatibus cumque necessitatibus est cupiditate expedita. Dolorem, eligendi!
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis sunt architecto corporis adipisci dolorum numquam, ratione officiis. Eveniet eius perspiciatis laborum tenetur ipsum est quidem, adipisci omnis, explicabo, accusamus sequi.
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus, explicabo voluptas labore quod ad sapiente, voluptates adipisci dicta magnam commodi doloribus nostrum voluptatibus. Repellat repellendus voluptatum consectetur unde aperiam at.
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nisi reiciendis voluptatum eligendi accusamus rerum officia adipisci amet temporibus nam quidem? Earum quo, sapiente alias harum accusamus autem ea doloribus ad.
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem debitis modi odit at nam rerum, dicta, dignissimos magnam eius alias, culpa sed. Fuga blanditiis necessitatibus quis. Quia ad repellendus quidem?
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae odio porro laborum quae illo nesciunt sint dolorem tempora odit, incidunt a similique voluptatibus cumque necessitatibus est cupiditate expedita. Dolorem, eligendi!
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis sunt architecto corporis adipisci dolorum numquam, ratione officiis. Eveniet eius perspiciatis laborum tenetur ipsum est quidem, adipisci omnis, explicabo, accusamus sequi.
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus, explicabo voluptas labore quod ad sapiente, voluptates adipisci dicta magnam commodi doloribus nostrum voluptatibus. Repellat repellendus voluptatum consectetur unde aperiam at.
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nisi reiciendis voluptatum eligendi accusamus rerum officia adipisci amet temporibus nam quidem? Earum quo, sapiente alias harum accusamus autem ea doloribus ad.
-            </p>
+            <h1>{post.title}</h1>
+            <p>{post.desc}</p>
         </div>
         
         <Menu/>
