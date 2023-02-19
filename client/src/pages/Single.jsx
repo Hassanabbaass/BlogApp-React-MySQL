@@ -25,6 +25,7 @@ const Single = () => {
     useEffect(() => {
         const fetchData = async () => {
             getPost(postId).then((result) => {
+                console.log(result)
                 setPost(result.data);
             }).catch((err) => {
                 console.log(err)
@@ -41,10 +42,16 @@ const Single = () => {
         })
     }
 
+    //since the react quill provides texts with tags like html we need to convert them to normal text
+    const getText = (html) => {
+        const doc = new DOMParser().parseFromString(html, "text/html")
+        return doc.body.textContent;
+    }
+
   return (
     <div className='single'>
         <div className='content'>
-            <img src={post?.img} alt=''/>
+            <img src={`../upload/${post?.img}`} alt=''/>
             <div className="user">
                 <img src={post?.userImg ? post.userImg : userLogo} alt=''/>
                 <div className="info">
@@ -56,7 +63,7 @@ const Single = () => {
                 {
                 currentUser?.username === post.username && 
                     <div className="edit">
-                        <Link to='/write?edit=2'>
+                        <Link to='/write?edit=2' state={post}>
                             <img src={Edit} alt=''/>
                         </Link>
                         <img src={Delete} alt='' onClick={handleDelete}/>
@@ -64,7 +71,7 @@ const Single = () => {
                 }
             </div>
             <h1>{post.title}</h1>
-            <p>{post.desc}</p>
+            <p>{getText(post.desc)}</p>
         </div>
         
         <Menu cat={post.cat}/>

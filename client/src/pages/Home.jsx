@@ -19,6 +19,12 @@ const Home = () => {
         fetchData();
     }, [cat]);
 
+    //since the react quill provides texts with tags like html we need to convert them to normal text
+    const getText = (html) => {
+        const doc = new DOMParser().parseFromString(html, "text/html")
+        return doc.body.textContent;
+    }
+
 
   return (
     <div className='home'>
@@ -27,15 +33,19 @@ const Home = () => {
                 <div className='post' key={item.id}>
 
                     <div className='img'>
-                        <img src={item.img} alt=''/>
+                        <img src={`./upload/${item.img}`} alt=''/>
                     </div>
 
                     <div className='content'>
                         <Link className='link' to={`/post/${item.id}`}>
                             <h1>{item.title}</h1>
                         </Link>
-                        <p>{item.desc}</p>
-                        <button>Read More</button>
+                        <p>{getText(item.desc)}</p>
+                        <button>
+                            <Link className='link' to={`/post/${item.id}`}>
+                                Read More
+                            </Link>
+                        </button>
                     </div>
 
                 </div>

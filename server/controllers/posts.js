@@ -12,7 +12,7 @@ const getPosts = (req,res) => {
 }
 
 const getPost = (req,res) => {
-    const q = "SELECT `username`,`title`,`desc`,p.img, u.img AS userImg,`cat`,`date` FROM  users u JOIN posts p ON u.id=p.uid WHERE p.id = ?"
+    const q = "SELECT p.id, `username`,`title`,`desc`,p.img, u.img AS userImg,`cat`,`date` FROM  users u JOIN posts p ON u.id=p.uid WHERE p.id = ?"
 
     db.query(q, [req.params.id], (err,data) => {
         if(err) return res.status(500).json(err)
@@ -22,7 +22,26 @@ const getPost = (req,res) => {
 }
 
 const addPost = (req,res) => {
-    res.json("hi")
+    const token = req.cookies.access_token;
+    if(!token) return res.status(401).json("Not Authenticated");
+
+    jwt.verify(token, "jwtkey", (err, userInfo) => {
+        const q = "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `uid`) VALUES (?)"
+
+        const values = [
+            req.body.title,
+            req.body.desc,
+            req.body.img,
+            req.body.cat,
+            req.body.date,
+            userInfo.id
+        ]
+
+        db.query(q,[values], (err,data) => {
+            if(err) return res.status(500).json(err);
+            return res.json("Post has been created")
+        })
+    })
 }
 
 const deletePost = (req,res) => {
@@ -44,7 +63,27 @@ const deletePost = (req,res) => {
 }
 
 const updatePost = (req,res) => {
-    res.json("hi")
+    const token = req.cookies.access_token;
+    if(!token) return res.status(401).json("Not Authenticated");
+
+    jwt.verify(token, "jwtkey", (err, userInfo) => {
+
+        const postId = req.params.id
+        const q = "UPDATE posts SET `title`=?, `desc`=?, `cat`=?, `img`=? WHERE `id`= ? AND `uid`= ?"
+
+        const values = [
+            req.body.title,
+            req.body.desc,
+            req.body.cat,
+            req.body.img,
+            
+        ]
+
+        db.query(q,[...values, postId, userInfo.id], (err,data) => {
+            if(err) return res.status(500).json(err);
+            return res.json("Post has been updated")
+        })
+    })
 }
 
 

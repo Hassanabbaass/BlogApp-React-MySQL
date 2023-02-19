@@ -21,7 +21,7 @@ const Menu = ({cat}) => {
             <h1>Other posts you may like</h1>
             {posts.slice(0,3).map((item) => (
                 <div className="post" key={item.id}>
-                    <img alt='' src={item.img}/>
+                    <img alt='' src={`../upload/${item.img}`}/>
                     <h2>{item.title}</h2>
                     <button>Read More</button>
                 </div>
